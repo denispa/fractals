@@ -7,6 +7,10 @@ void a(int i, int u);
 void b(int i, int u);
 void c(int i, int u);
 void d(int i, int u);
+HPEN red = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+HPEN green = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+HPEN blue = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
+HPEN black = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
 LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
 char szClassName[] = "Krivaia Gil'berta";
 
@@ -31,7 +35,7 @@ int WINAPI WinMain(HINSTANCE hThisInstance,
 	wincl.lpszMenuName = NULL;
 	wincl.cbClsExtra = 0;
 	wincl.cbWndExtra = 0;
-	wincl.hbrBackground = CreateSolidBrush(RGB(255, 255, 255));
+	wincl.hbrBackground = CreateSolidBrush(RGB(150, 150, 150));
 
 
 
@@ -92,11 +96,11 @@ void a(int i, int u) {
 
 	if (i>0){
 		d(i - 1, u);
-		linetodxy(u, 0);
+		SelectObject(hdc, red); linetodxy(u, 0);
 		a(i - 1, u);
-		linetodxy(0, u);
+		SelectObject(hdc, red); linetodxy(0, u);
 		a(i - 1, u);
-		linetodxy(-u, 0);
+		SelectObject(hdc, red); linetodxy(-u, 0);
 		c(i - 1, u);
 	}
 }
@@ -105,11 +109,11 @@ void b(int i, int u) {
 
 	if (i>0) {
 		c(i - 1, u);
-		linetodxy(-u, 0);
+		SelectObject(hdc, blue); linetodxy(-u, 0);
 		b(i - 1, u);
-		linetodxy(0, -u);
+		SelectObject(hdc, blue); linetodxy(0, -u);
 		b(i - 1, u);
-		linetodxy(u, 0);
+		SelectObject(hdc, blue); linetodxy(u, 0);
 		d(i - 1, u);
 	}
 }
@@ -118,11 +122,11 @@ void c(int i, int u) {
 
 	if (i>0) {
 		b(i - 1, u);
-		linetodxy(0, -u);
+		SelectObject(hdc, green); linetodxy(0, -u);
 		c(i - 1, u);
-		linetodxy(-u, 0);
+		SelectObject(hdc, green); linetodxy(-u, 0);
 		c(i - 1, u);
-		linetodxy(0, u);
+		SelectObject(hdc, green); linetodxy(0, u);
 		a(i - 1, u);
 	}
 }
@@ -130,11 +134,11 @@ void c(int i, int u) {
 void d(int i, int u) {
 	if (i>0) {
 		a(i - 1, u);
-		linetodxy(0, u);
+		SelectObject(hdc, black); linetodxy(0, u);
 		d(i - 1, u);
-		linetodxy(u, 0);
+		SelectObject(hdc, black); linetodxy(u, 0);
 		d(i - 1, u);
-		linetodxy(0, -u);
+		SelectObject(hdc, black); linetodxy(0, -u);
 		b(i - 1, u);
 	}
 }
