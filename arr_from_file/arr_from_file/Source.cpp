@@ -5,10 +5,10 @@ int x, y;
 int k;
 HDC hdc;
 PAINTSTRUCT ps;
-void a(int i, int u, int r);
-void b(int i, int u, int r);
-void c(int i, int u, int r);
-void d(int i, int u, int r);
+void a(int i, int u, int r, int t);
+void b(int i, int u, int r, int t);
+void c(int i, int u, int r, int t);
+void d(int i, int u, int r, int t);
 HPEN red = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
 HPEN green = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
 HPEN blue = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
@@ -108,7 +108,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		fclose(file);
 		*/
 
-		a(8, 40, 0);
+		a(8, 40, 0,0);
 		ValidateRect(hwnd, NULL);
 		EndPaint(hwnd, &ps);
 		break;
@@ -124,19 +124,21 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 }
 
 
-void a(int i, int u, int r) {
+void a(int i, int u, int r, int t) {
+	
 
-	if ((i < 6) && (k == 0)) { k = 1; a(1, 40, r); k = 0; return; }
-	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; a(3, 20, r); k = 0; return; }
+	if ((i < 6) && (k == 0)) { k = 1; a(1, 40, r,t); k = 0; return; }
+	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; a(3, 20, r,t); k = 0; return; }if (t == 1)linetodxy( u / 2,0);
+	if (t == 2)linetodxy(0,u / 2 );
 	if (i > 1){
-
-		d(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(u / 4, 0); else linetodxy(u / 2, 0);
-		a(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(0, u / 4); else linetodxy(0, u / 2);
-		a(i - 1, u, 2);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(-u / 4, 0); else linetodxy(-u / 2, 0);
-		c(i - 1, u, 0);
+		
+		d(i - 1, u, 1,0);
+		SelectObject(hdc, yellow);// if (i > 6) linetodxy(u / 4, 0); else linetodxy(u / 2, 0);
+		a(i - 1, u, 1,1);
+		SelectObject(hdc, yellow); //if (i > 6) linetodxy(0, u / 4); else linetodxy(0, u / 2);
+		a(i - 1, u, 2,2);
+		SelectObject(hdc, yellow); //if (i > 6) linetodxy(-u / 4, 0); else linetodxy(-u / 2, 0);
+		c(i - 1, u, 0,2);
 	}
 	if (i == 1){
 		SelectObject(hdc, red); linetodxy(u, 0);
@@ -148,18 +150,20 @@ void a(int i, int u, int r) {
 	if (r == 2)linetodxy(-u / 2, 0);
 }
 
-void b(int i, int  u, int r) {
+void b(int i, int  u, int r, int t) {
 
-	if ((i < 6) && (k == 0)) { k = 1; b(1, 40, r); k = 0; return; }
-	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; b(3, 20, r); k = 0; return; }
+	if ((i < 6) && (k == 0)) { k = 1; b(1, 40, r,t); k = 0; return; }
+	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; b(3, 20, r,t); k = 0; return; }	if (t == 1)linetodxy( -u / 2,0);
+	if (t == 2) linetodxy(0,-u / 2);
+ 
 	if (i > 1) {
-		c(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6)linetodxy(-u / 4, 0); else linetodxy(-u / 2, 0);
-		b(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6)linetodxy(0, -u / 4); else  linetodxy(0, -u / 2);
-		b(i - 1, u, 2);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(u / 4, 0); else linetodxy(u / 2, 0);
-		d(i - 1, u, 0);
+		c(i - 1, u, 1,0);
+		SelectObject(hdc, yellow);// if (i > 6)linetodxy(-u / 4, 0); else linetodxy(-u / 2, 0);
+		b(i - 1, u, 1,1);
+		SelectObject(hdc, yellow); //if (i > 6)linetodxy(0, -u / 4); else  linetodxy(0, -u / 2);
+		b(i - 1, u, 2,2);
+		SelectObject(hdc, yellow);// if (i > 6) linetodxy(u / 4, 0); else linetodxy(u / 2, 0);
+		d(i - 1, u, 0,2);
 	}
 	if (i == 1) {
 		SelectObject(hdc, blue); linetodxy(-u, 0);
@@ -171,18 +175,20 @@ void b(int i, int  u, int r) {
 	if (r == 2) linetodxy(u / 2, 0);
 }
 
-void c(int i, int u, int r) {
+void c(int i, int u, int r,int t) {
+	
+	if ((i < 6) && (k == 0)) { k = 1; c(1, 40, r,t); k = 0; return; }
+	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; c(3, 20, r,t); k = 0; return; }if (t ==1)linetodxy(0,-u / 2);
+	if (t == 2)linetodxy(-u / 2,0);
 
-	if ((i < 6) && (k == 0)) { k = 1; c(1, 40, r); k = 0; return; }
-	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; c(3, 20, r); k = 0; return; }
 	if (i > 1) {
-		b(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6)linetodxy(0, -u / 4); else linetodxy(0, -u / 2);
-		c(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(-u / 4, 0); else linetodxy(-u / 2, 0);
-		c(i - 1, u, 2);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(0, u / 4); else linetodxy(0, u / 2);
-		a(i - 1, u, 0);
+		b(i - 1, u, 1,0);
+		SelectObject(hdc, yellow);// if (i > 6)//linetodxy(0, -u / 4); else linetodxy(0, -u / 2);
+		c(i - 1, u, 1,1);
+		SelectObject(hdc, yellow); //if (i > 6) //linetodxy(-u / 4, 0); else linetodxy(-u / 2, 0);
+		c(i - 1, u, 2,2);
+		SelectObject(hdc, yellow);// if (i > 6)// linetodxy(0, u / 4); else linetodxy(0, u / 2);
+		a(i - 1, u, 0,2);
 	}
 	if (i == 1) {
 		SelectObject(hdc, green); linetodxy(0, -u);
@@ -194,19 +200,21 @@ void c(int i, int u, int r) {
 	if (r == 2)linetodxy(0, u / 2);
 }
 
-void d(int i, int u, int r) {
+void d(int i, int u, int r,int t ) {
+	
 
-	if ((i < 6) && (k == 0)) { k = 1; d(1, 40, r); k = 0; return; }
-	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; d(3, 20, r); k = 0; return; }
+	if ((i < 6) && (k == 0)) { k = 1; d(1, 40, r,t); k = 0; return; }
+	if ((i < 7) && (k == 0) && (y < 370)) { k = 1; d(3, 20, r,t); k = 0; return; }if (t == 1) linetodxy(0,u / 2);
+	if (t == 2)linetodxy(u / 2,0);
 	if (i > 1) {
 
-		a(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(0, u / 4); else linetodxy(0, u / 2);
-		d(i - 1, u, 1);
-		SelectObject(hdc, yellow); if (i > 6) linetodxy(u / 4, 0); else linetodxy(u / 2, 0);
-		d(i - 1, u, 2);
-		SelectObject(hdc, yellow); if (i > 6)linetodxy(0, -u / 4); else linetodxy(0, -u / 2);
-		b(i - 1, u, 0);
+		a(i - 1, u, 1,0);
+		SelectObject(hdc, yellow); //if (i > 6) linetodxy(0, u / 4); else linetodxy(0, u / 2);
+		d(i - 1, u, 1,1);
+		SelectObject(hdc, yellow); //if (i > 6) linetodxy(u / 4, 0); else linetodxy(u / 2, 0);
+		d(i - 1, u, 2,2);
+		SelectObject(hdc, yellow); //if (i > 6)linetodxy(0, -u / 4); else linetodxy(0, -u / 2);
+		b(i - 1, u, 0,2);
 	}
 	if (i == 1) {
 		SelectObject(hdc, black); linetodxy(0, u);
