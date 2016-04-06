@@ -76,7 +76,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 		x = 50; y = 50;
 		MoveToEx(hdc, x, y, NULL);
 
-		a(5, 10);
+		a(8, 2);
 		ValidateRect(hwnd, NULL);
 		EndPaint(hwnd, &ps);
 		break;
