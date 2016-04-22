@@ -5,10 +5,21 @@ int x, y;
 int k,kk;
 HDC hdc;
 PAINTSTRUCT ps;
-void a(int i, int u, int r, int t, int posX,int posY);
-void b(int i, int u, int r, int t, int posX,int posY);
-void c(int i, int u, int r, int t, int posX,int posY);
-void d(int i, int u, int r, int t, int posX, int posY);
+void a(int i, int u, int r, int t, int posX, int posY, int step);
+void b(int i, int u, int r, int t, int posX, int posY, int step);
+void c(int i, int u, int r, int t, int posX, int posY, int step);
+void d(int i, int u, int r, int t, int posX, int posY, int step);
+/*
+HPEN red = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+HPEN green = CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+HPEN blue = CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
+HPEN black = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+*/
+HPEN red = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+HPEN green = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+HPEN blue = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+HPEN black = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+
 int pow2(int power);
 bool check_black(int posX, int posY, int i);
 bool check_white(int posX, int posY, int i);
@@ -85,11 +96,16 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 				arr[i][o] = fgetc(file);
 			fgetc(file);
 		}
-		fclose(file);
-		
-		x = 40; y = 40;
+		fclose(file);SelectObject(hdc, green);
+	 /*	for (int i = 39; i<700; i+=4)
+			{
+				MoveToEx(hdc, i, 0, NULL); LineTo(hdc, i, 600);
+			} */
+		x = 40; y =40; SetPixel(hdc, 39, 40, RGB(0, 255, 0)); 
+		SelectObject(hdc, red);MoveToEx(hdc, 550, 10, NULL); 
+		LineTo(hdc, 601, 35); SelectObject(hdc, green); SetPixel(hdc, 602, 35, RGB(0, 255, 0)); LineTo(hdc, 600, 30);
 		MoveToEx(hdc, x, y, NULL); 
-		a(8, 64, 0, 0, 0, 0);
+		a(8, 8, 0, 0, 0, 0, 8);
 		ValidateRect(hwnd, NULL);
 		EndPaint(hwnd, &ps);
 		break;
@@ -105,133 +121,225 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 }
 
 
-void a(int i, int length, int l_bef, int l_aft, int posX, int posY) {
-
+void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
+	SetPixel(hdc, posX * 4 + 600, posY * 4 + 40, RGB(0, 0, 0));
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)) {
-		k = 1; a(4, pow2(i) / 8, l_bef, l_aft, posX, posY); k = 0; return; 
+		k = 1; a(i - 2, 8, l_bef, l_aft, posX, posY, i); k = 0; return;
 	}
 	if ((check_black(posX, posY, pow2(i - 1))) && (kk == 0)) {
-		kk = 1; a(i, 2, l_bef, l_aft, posX, posY); kk = 0; return;
+		kk = 1; a(i, 2, l_bef, l_aft, posX, posY, i); kk = 0; return;
 	}
-	
-	if (l_bef == 1) linetodxy(length / 2, 0); 
-	if (l_bef == 2) linetodxy(0, length / 2); 
-
+	if (k==1)
+	{	
+		if ((2 > 1) && (l_bef == 1)){ SelectObject(hdc, green); x =posX * 4 + 39 ; y =posY * 4 + 39 + 4 ; LineTo(hdc,x ,y ); }
+		if ((2 > 1) && (l_bef == 2)){SelectObject(hdc, green);  x = posX * 4 + 39 + 4 ; y =posY * 4 + 39 ; LineTo(hdc,x,y ); }
+	}
+	if (kk == 1)
+	{
+		if ((i > 1) && (l_bef == 0)){ SelectObject(hdc, green); x = posX * 4 + 39+1; y = posY * 4 + 39+1 ; LineTo(hdc, x, y); }
+		if ((i > 1) && (l_bef == 1)){ SelectObject(hdc, green); x = posX * 4 + 39; y = posY * 4 + 39 + 1; LineTo(hdc, x, y); }
+		if ((i > 1) && (l_bef == 2)){ SelectObject(hdc, green);  x = posX * 4 + 39 + 1; y = posY * 4 + 39; LineTo(hdc, x, y); }
+	}
+	 
+	SelectObject(hdc, red);
+	if (check_black(posX, posY, 1)){
+		if (l_bef == 1) linetodxy(1, 0);
+		if (l_bef == 2) linetodxy(0, 1);
+	} else{if (l_bef == 1) linetodxy(u / 2, 0);
+		if (l_bef == 2) linetodxy(0, u / 2);}
+	SelectObject(hdc, black);
 	if (i > 1){		
-			d(i - 1, length, 0, 1, posX, posY);
-		posX += pow2(i - 2); 
-			a(i - 1, length, 1, 1, posX, posY);
-		posY += pow2(i - 2); 
-			a(i - 1, length, 2, 2, posX, posY);
-		posX -= pow2(i - 2); 
-			c(i - 1, length, 2, 0, posX, posY);
+		d(i - 1, u, 0, 1, posX, posY, step - 1);
+		posX += pow2(step - 2); 
+		a(i - 1, u, 1, 1, posX, posY, step - 1);
+		posY += pow2(step - 2);
+		a(i - 1, u, 2, 2, posX, posY, step - 1);
+		posX -= pow2(step - 2);
+		 c(i - 1, u, 2, 0, posX, posY, step - 1);
 	}
 	
 	if (i == 1){ 
-		linetodxy(length, 0);
-		linetodxy(0, length);
-		linetodxy(-length, 0);
+		linetodxy(u, 0);
+		linetodxy(0, u);
+		linetodxy(-u, 0);
 	}
 
-	if (l_aft == 1) linetodxy(0, length / 2);
-	if (l_aft == 2) linetodxy(-length / 2, 0);
+	SelectObject(hdc, red);
+	if (check_black(posX, posY , 1)){
+		if (l_aft == 1) linetodxy(0,1);
+		if (l_aft == 2) linetodxy(-1, 0);
+	} else{if (l_aft == 1) linetodxy(0, u / 2);
+		if (l_aft == 2) linetodxy(-u / 2, 0);}
+	SelectObject(hdc, black); 
 }
 
-void b(int i, int  u, int l_bef, int l_aft, int posX, int posY) {
-
+void b(int i, int  u, int l_bef, int l_aft, int posX, int posY, int step) {
+	SetPixel(hdc, posX * 4 + 600, posY * 4 + 40, RGB(0, 0, 0));
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)){ 
-		 k = 1; b(4, pow2(i) / 8, l_bef, l_aft, posX, posY); k = 0; return; 
+		k = 1; b(i - 2, 8, l_bef, l_aft, posX, posY, i); k = 0; return;
 	}
 	if ((check_black(posX, posY, pow2(i - 1))) && (kk == 0)){ 
-		 kk = 1; b(i, 2, l_bef, l_aft, posX, posY); kk = 0; return; 
+		kk = 1; b(i, 2, l_bef, l_aft, posX, posY, i); kk = 0; return;
 	}
-	 
-	if (l_bef == 1)linetodxy(-u / 2, 0);
-	if (l_bef == 2) linetodxy(0, -u / 2);
- 
+	
+	 if (k == 1)
+	{
+		if ((i > 1) && (l_bef == 1)){ SelectObject(hdc, green); x = (posX + pow2(step-1)) * 4 + 39 ; y = (posY + pow2(step - 1)) * 4 + 39- 4; 
+										LineTo(hdc, x, y); }
+		if ((i > 1) && (l_bef == 2)){ SelectObject(hdc, green);  x = (posX + pow2(step-1)) * 4 + 39-4; y = (posY + pow2(step - 1)) * 4 + 39 ;  
+										LineTo(hdc, x, y); }
+	} 
+	 if (kk == 1)
+	 {
+		 if ((i > 1) && (l_bef == 1)){
+			 SelectObject(hdc, green); x = (posX + pow2(step - 1)) * 4 + 39; y = (posY + pow2(step - 1)) * 4 + 39 - 1;
+			 LineTo(hdc, x, y);
+		 }
+		 if ((i > 1) && (l_bef == 2)){
+			 SelectObject(hdc, green);  x = (posX + pow2(step - 1)) * 4 + 39-1  ; y = (posY + pow2(step - 1)) * 4 + 39;
+			 LineTo(hdc, x, y);
+		 }
+	 }
+
+
+
+	 SelectObject(hdc, green);
+	 if (check_black(posX + pow2(step - 2), posY + pow2(step -2), 1)){
+		 if (l_bef == 1)linetodxy(-1, 0);
+		 if (l_bef == 2) linetodxy(0, -1);
+	 } else{ if (l_bef == 1)linetodxy(-u / 2, 0);
+		 if (l_bef == 2) linetodxy(0, -u / 2);}
+	SelectObject(hdc, black);
+
 	if (i > 1) {
-		posX += pow2(i - 2); 
-		posY += pow2(i - 2); 
-			c(i - 1, u, 0, 1, posX, posY);
-		posX -= pow2(i - 2);  
-			b(i - 1, u, 1, 1, posX , posY);
-		posY -= pow2(i - 2); 
-			b(i - 1, u, 2, 2, posX , posY );
-		posX += pow2(i - 2); 
-			d(i - 1, u, 2, 0, posX , posY);
+		posX += pow2(step - 2);
+		posY += pow2(step - 2);
+		c(i - 1, u, 0, 1, posX, posY, step - 1);
+		posX -= pow2(step - 2);
+		b(i - 1, u, 1, 1, posX, posY, step - 1);
+		posY -= pow2(step - 2);
+		b(i - 1, u, 2, 2, posX, posY, step - 1);
+		posX += pow2(step - 2);
+		d(i - 1, u, 2, 0, posX, posY, step - 1);
 	}
 	if (i == 1) {
 		linetodxy(-u, 0);
 		linetodxy(0, -u);
 		linetodxy(u, 0);
-	}
-	
-	if (l_aft == 1)linetodxy(0, -u / 2);
-	if (l_aft == 2) linetodxy(u / 2, 0);
+	}SelectObject(hdc, green);
+	if (check_black(posX, posY, 1)){
+		if (l_aft == 1)linetodxy(0, -1);
+		if (l_aft == 2) linetodxy(1, 0);
+	} else{	if (l_aft == 1)linetodxy(0, -u / 2);
+		if (l_aft == 2) linetodxy(u / 2, 0);}SelectObject(hdc, black);
 }
 
-void c(int i, int u, int l_bef, int l_aft, int posX, int posY) {
-
+void c(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
+	SetPixel(hdc, posX * 4 + 600, posY * 4 + 40, RGB(0, 0, 0));
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)){  
-		k = 1; c(4, pow2(i) / 8, l_bef, l_aft, posX, posY); k = 0; return; 
+		k = 1; c(i - 2, 8, l_bef, l_aft, posX, posY, i); k = 0; return;
 	}
 	if ((check_black(posX, posY, pow2(i - 1))) && (kk == 0)){ 
-		 kk = 1; c(i, 2, l_bef, l_aft, posX, posY); kk = 0; return; 
+		kk = 1; c(i, 2, l_bef, l_aft, posX, posY, i); kk = 0; return;
 	}
 
-	if (l_bef == 1)linetodxy(0, -u / 2);
-	if (l_bef == 2)linetodxy(-u / 2, 0);
+ 	 if (k==1)
+	{
+		if ((i > 1) && (l_bef == 1)){ SelectObject(hdc, green); x = (posX + pow2(step-1)) * 4 + 39 - 4; y = (posY + pow2(step-1)) * 4 + 39; LineTo(hdc, x, y); }
+		if ((i > 1) && (l_bef == 2)){ SelectObject(hdc, green);  x = (posX + pow2(step - 1)) * 4 + 39; y = (posY + pow2(step - 1)) * 4 + 39 - 4;  LineTo(hdc, x, y); }
+	} 
+
+	 if (kk == 1)
+	 {
+		 if ((i > 1) && (l_bef == 1)){ SelectObject(hdc, green); x = (posX + pow2(step - 1)) * 4 + 39 - 1; y = (posY + pow2(step - 1)) * 4 + 39; LineTo(hdc, x, y); }
+		 if ((i > 1) && (l_bef == 2)){ SelectObject(hdc, green);  x = (posX + pow2(step - 1)) * 4 + 39; y = (posY + pow2(step - 1)) * 4 + 39 - 1;  LineTo(hdc, x, y); }
+	 }
+
+SelectObject(hdc, blue);
+if (check_black(posX+pow2(step - 2), posY+pow2(step - 2), 1)){
+	if (l_bef == 1)linetodxy(0, -1);
+	if (l_bef == 2)linetodxy(-1, 0);
+} else{if (l_bef == 1)linetodxy(0, -u / 2);
+	if (l_bef == 2)linetodxy(-u / 2, 0);}
+SelectObject(hdc, black);	
 
 	if (i > 1) {
-		posY += pow2(i - 2);
-		posX += pow2(i - 2);
-			b(i - 1, u, 0, 1, posX, posY);
-		posY -= pow2(i - 2); 
-			c(i - 1, u, 1, 1, posX , posY );
-		posX -= pow2(i - 2); 
-			c(i - 1, u, 2, 2, posX , posY);
-		posY += pow2(i - 2); 
-			a(i - 1, u, 2, 0, posX , posY);
+		posY += pow2(step - 2);
+		posX += pow2(step - 2);
+		b(i - 1, u, 0, 1, posX, posY, step - 1);
+		posY -= pow2(step - 2);
+		c(i - 1, u, 1, 1, posX, posY, step - 1);
+		posX -= pow2(step - 2);
+		c(i - 1, u, 2, 2, posX, posY, step - 1);
+		posY += pow2(step - 2);
+		a(i - 1, u, 2, 0, posX, posY, step - 1);
 	}
 	if (i == 1) {
 		linetodxy(0, -u);
 		linetodxy(-u, 0);
 		linetodxy(0, u);
 	}
-	
-	if (l_aft == 1) linetodxy(-u / 2, 0);
-	if (l_aft == 2) linetodxy(0, u / 2);
+	if (check_black(posX , posY , 1)){
+		if (l_aft == 1) linetodxy(-1, 0);
+		if (l_aft == 2) linetodxy(0, 1);
+	}
+	else{
+		if (l_aft == 1) linetodxy(-u / 2, 0);
+		if (l_aft == 2) linetodxy(0, u / 2);
+	}
 }
 
-void d(int i, int u, int l_bef, int l_aft, int posX, int posY) {
-
+void d(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
+	SetPixel(hdc, posX * 4 + 600, posY * 4 + 40, RGB(0, 0, 0));
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)){ 
-		 k = 1; d(4, pow2(i) / 8, l_bef, l_aft, posX, posY); k = 0; return; 
+		k = 1; d(i - 2, 8, l_bef, l_aft, posX, posY, i); k = 0; return;
 	}
 	if ((check_black(posX, posY, pow2(i - 1))) && (kk == 0)) {
-		 kk = 1; d(i, 2, l_bef, l_aft, posX, posY); kk = 0; return; 
+		kk = 1; d(i, 2, l_bef, l_aft, posX, posY, i); kk = 0; return;
 	}
-	
+
+
+ 	if (k == 1)
+	{
+		if ((2 > 1) && (l_bef == 1)){ SelectObject(hdc, green); x = posX * 4 +39 + 4; y = posY * 4 + 39;LineTo(hdc, x, y); }
+		if ((2 > 1) && (l_bef == 2)){ SelectObject(hdc, green);  x = posX * 4 +39; y = posY * 4 + 39 + 4;  LineTo(hdc, x, y); }
+	}
+	if (kk == 1)
+	{
+		if ((i > 1) && (l_bef == 1)){ SelectObject(hdc, green); x = posX * 4 + 39 + 1; y = posY * 4 + 39; LineTo(hdc, x, y); }
+		if ((i > 1) && (l_bef == 2)){ SelectObject(hdc, green);  x = posX * 4 + 39; y = posY * 4 + 39 + 1;  LineTo(hdc, x, y); }
+	}
+ SelectObject(hdc, blue);
+if (check_black(posX, posY, 1)){
+	if (l_bef == 1) linetodxy(0,1);
+	if (l_bef == 2)linetodxy(1, 0);
+}
+else{
 	if (l_bef == 1) linetodxy(0, u / 2);
 	if (l_bef == 2)linetodxy(u / 2, 0);
+}SelectObject(hdc, black);
 	
 	if (i > 1) {
-			a(i - 1, u, 0, 1, posX, posY);
-		posY += pow2(i - 2); 
-			d(i - 1, u, 1, 1, posX, posY );
-		posX += pow2(i - 2); 
-			d(i - 1, u, 2, 2, posX, posY );
-		posY -= pow2(i - 2); 
-			b(i - 1, u, 2, 0, posX, posY );
+		a(i - 1, u, 0, 1, posX, posY, step - 1);
+			posY += pow2(step - 2);
+			d(i - 1, u, 1, 1, posX, posY, step - 1);
+		posX += pow2(step - 2);
+		d(i - 1, u, 2, 2, posX, posY, step - 1);
+		posY -= pow2(step - 2);
+		b(i - 1, u, 2, 0, posX, posY, step - 1);
 	}
 	if (i == 1) {
 		linetodxy(0, u);
 		linetodxy(u, 0);
 		linetodxy(0, -u);
 	} 	
-	
-	if (l_aft == 1) linetodxy(u / 2, 0);
-	if (l_aft == 2) linetodxy(0, -u / 2);
+
+	SelectObject(hdc, blue);
+	if (check_black(posX, posY, 1)){
+		if (l_aft == 1) linetodxy(1, 0);
+		if (l_aft == 2) linetodxy(0, -1);
+	} else{	if (l_aft == 1) linetodxy(u / 2, 0);
+		if (l_aft == 2) linetodxy(0, -u / 2);}SelectObject(hdc, black);
 }
 
 void linetodxy(int dx, int dy)
