@@ -1,159 +1,127 @@
 #include <windows.h>
 #include <stdio.h>
+#include "CurveDraw.h"
+
+using namespace System;
+using namespace System::ComponentModel;
+using namespace System::Collections;
+using namespace System::Windows::Forms;
+using namespace System::Data;
+using namespace System::Drawing;
+
 void linetodxy(int dx, int dy);
-int x, y;
-int k, kk;
-HDC hdc;
-PAINTSTRUCT ps;
-static HDC memBit;
-static HBITMAP hBitmap;
+void LineToPoint(int x, int y);
+
 void a(int i, int u, int r, int t, int posX, int posY, int step);
 void b(int i, int u, int r, int t, int posX, int posY, int step);
 void c(int i, int u, int r, int t, int posX, int posY, int step);
 void d(int i, int u, int r, int t, int posX, int posY, int step);
 
-HPEN black = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-
 int pow2(int power);
 bool check_black(int posX, int posY, int i);
 bool check_white(int posX, int posY, int i);
 
-int **arr = (int**)malloc(512 * sizeof(int*));
+void ReadBmp(int black, int white, String^ adress);
+void Makearray(void);
 
-LRESULT CALLBACK WindowProcedure(HWND, UINT, WPARAM, LPARAM);
-char szClassName[] = "Krivaia Gil'berta";
 
-int WINAPI WinMain(HINSTANCE hThisInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpszArgument,
-	int nFunsterStil)
-{
-	HWND hwnd;
-	MSG messages;
-	WNDCLASSEX wincl;
-	wincl.hInstance = hThisInstance;
-	wincl.lpszClassName = szClassName;
-	wincl.lpfnWndProc = WindowProcedure;
-	wincl.style = CS_DBLCLKS;
-	wincl.cbSize = sizeof(WNDCLASSEX);
+int x = 0, y = 0;
+int k, kk;
+int ptsX[110000], ptsY[110000];
+int num = 0;
 
-	wincl.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wincl.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	wincl.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wincl.lpszMenuName = NULL;
-	wincl.cbClsExtra = 0;
-	wincl.cbWndExtra = 0;
-	wincl.hbrBackground = CreateSolidBrush(RGB(140, 140, 140));
+char **arr;
 
-	if (!RegisterClassEx(&wincl))
-		return 0;
-	hwnd = CreateWindowEx(
-		0,
-		szClassName,
-		"Krivaia Gil'berta",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		800,
-		600,
-		HWND_DESKTOP,
-		NULL,
-		hThisInstance,
-		NULL
-		);
-	ShowWindow(hwnd, nFunsterStil);
-	while (GetMessage(&messages, NULL, 0, 0)){
-		TranslateMessage(&messages);
-		DispatchMessage(&messages);
+int DrawCurve(System::Drawing::Graphics^ grr, System::Drawing::Pen^ my_pen, String^ adress, bool inverse){
+
+	arr = (char**)malloc(512 * sizeof(char*));
+	for (int i = 0; i < 512; i++){
+		arr[i] = (char*)malloc(512 * sizeof(char));
 	}
-	return messages.wParam;
-}
 
-LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
+	if (inverse)
+		ReadBmp(0, 1, adress);
+	else
+		ReadBmp(1, 0, adress);
+	Makearray();
+	//line building
+	a(8, 4, 0, 0, 0, 0, 8);
+
+	//draw to picturebox
+	grr->DrawLine(my_pen, 0, 0, ptsX[0] - 39, ptsY[0] - 39);
+
+	for (int i = 1; i < num; i++)
+		grr->DrawLine(my_pen, ptsX[i - 1] - 39, ptsY[i - 1] - 39, ptsX[i] - 39, ptsY[i] - 39);
+
+	for (int i = 0; i < 512; i++){
+		free(arr[i]);
+	}
+	free(arr);
+
+	for (int i = 0; i < num; i++)
 	{
-	case WM_PAINT:
-		hdc = BeginPaint(hwnd, &ps);
-
-
-		for (int i = 0; i<512; i++){
-			arr[i] = (int*)malloc(512 * sizeof(int));
-		}
-		/*FILE *file;
-
-		errno_t err;
-		err = fopen_s(&file, "E:/123.txt", "r");
-
-		for (int i = 0; i < 512; i++){
-		for (int o = 0; o < 512; o++)
-		arr[i][o] = fgetc(file);
-		fgetc(file);
-		}*/
-		hBitmap = (HBITMAP)LoadImage(NULL, TEXT("e:\\qwqqr.bmp"), IMAGE_BITMAP,
-			0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-		memBit = CreateCompatibleDC(hdc);
-		SelectObject(memBit, hBitmap);
-
-		//	BitBlt(hdc, 100, 100, 512, 512, memBit, 0, 0, SRCCOPY);
-
-		unsigned int t;
-		int num;
-		for (int i = 0; i < 512; i++) {
-			for (int o = 0; o < 512; o++){
-				t = GetPixel(memBit, i, o);
-				if (t == 16777215) num = 49; else num = 40;
-
-				arr[i][o] = num;
-			}
-		}
-
-
-		for (int i = 0; i < 64; i++){
-			for (int o = 0; o < 64; o++){
-				int kount = 0;
-				for (int ee = 0; ee < 8; ee++)
-					for (int qq = 0; qq < 8; qq++)
-						if (arr[i * 8 + ee][o * 8 + qq] == 49) kount++;
-
-				if (kount > 32) {
-					for (int ee = 0; ee < 2; ee++)
-						for (int qq = 0; qq < 2; qq++)
-							arr[i * 2 + ee][o * 2 + qq] = 49;
-				}
-				else
-				{
-					for (int ee = 0; ee < 2; ee++)
-						for (int qq = 0; qq < 2; qq++)
-							arr[i * 2 + ee][o * 2 + qq] = 40;
-				}
-
-
-			}
-		}
-
-
-		/*fclose(file);*/
-
-		x = 0; y = 0;
-
-		MoveToEx(hdc, x, y, NULL);
-		a(8, 4, 0, 0, 0, 0, 8);
-		ValidateRect(hwnd, NULL);
-		EndPaint(hwnd, &ps);
-		break;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+		ptsX[i] = 0;
+		ptsY[i] = 0;
 	}
-
+	num = 0;
 	return 0;
 }
 
 
+/*
+*getting array of colors from bmp
+*/
+void ReadBmp(int black, int white, String^ adress)
+{
+	for (int i = 0; i < 512; i++)
+	{
+		Bitmap^ Bmp = gcnew Bitmap(adress);
+		for (int o = 0; o < 512; o++)
+		{
+			Color c;
+			c = Bmp->GetPixel(i, o);
+			if (c == Color::FromArgb(0xFF000000))
+				arr[i][o] = black;
+			else
+				arr[i][o] = white;
+		}
+	}
+}
+
+/*
+*makes array for drawing
+*/
+void Makearray(void){
+
+	for (int i = 0; i < 64; i++){
+		for (int o = 0; o < 64; o++){
+			int kount = 0;
+			for (int ee = 0; ee < 8; ee++)
+				for (int qq = 0; qq < 8; qq++)
+					if (arr[i * 8 + ee][o * 8 + qq] == 1) kount++;
+
+			if (kount > 32) {
+				for (int ee = 0; ee < 2; ee++)
+					for (int qq = 0; qq < 2; qq++)
+						arr[i * 2 + ee][o * 2 + qq] = 1;
+			}
+			else
+			{
+				for (int ee = 0; ee < 2; ee++)
+					for (int qq = 0; qq < 2; qq++)
+						arr[i * 2 + ee][o * 2 + qq] = 0;
+			}
+
+
+		}
+	}
+}
+
+/**
+*  >___
+*  	   |
+*   ___|
+*/
 void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)) {
@@ -174,19 +142,20 @@ void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 		if (l_bef == 0){
 			x = posX * 4 + 39 + u / 2;
 			y = posY * 4 + 39 + u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
 			x = posX * 4 + 39;
 			y = posY * 4 + 39 + u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
 			x = posX * 4 + 39 + u / 2;
 			y = posY * 4 + 39;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 	}
+
 
 	if (check_black(posX, posY, 1)){
 		if (l_bef == 1)
@@ -200,7 +169,7 @@ void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 		if (l_bef == 2)
 			linetodxy(0, u / 2);
 	}
-	SelectObject(hdc, black);
+
 	if (i > 1){
 		d(i - 1, u, 0, 1, posX, posY, step - 1);
 		posX += pow2(step - 2);
@@ -217,7 +186,6 @@ void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 		linetodxy(-u, 0);
 	}
 
-
 	if (check_black(posX, posY, 1)){
 		if (l_aft == 1)
 			linetodxy(0, 1);
@@ -230,9 +198,14 @@ void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 		if (l_aft == 2)
 			linetodxy(-u / 2, 0);
 	}
-	SelectObject(hdc, black);
+
 }
 
+/**
+*   ___
+*  |
+*  |___<
+*/
 void b(int i, int  u, int l_bef, int l_aft, int posX, int posY, int step) {
 
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)){
@@ -253,17 +226,17 @@ void b(int i, int  u, int l_bef, int l_aft, int posX, int posY, int step) {
 		if (l_bef == 0){
 			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
 			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
 			x = (posX + pow2(step - 1)) * 4 + 39;
 			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
 			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
 			y = (posY + pow2(step - 1)) * 4 + 39;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 	}
 
@@ -312,6 +285,12 @@ void b(int i, int  u, int l_bef, int l_aft, int posX, int posY, int step) {
 	}
 }
 
+/**
+*   ___
+*  |   |
+*  |   |
+*      ^
+*/
 void c(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)){
@@ -332,17 +311,17 @@ void c(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 		if (l_bef == 0){
 			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
 			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
 			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
 			y = (posY + pow2(step - 1)) * 4 + 39;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
 			x = (posX + pow2(step - 1)) * 4 + 39;
 			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 	}
 
@@ -389,6 +368,12 @@ void c(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 	}
 }
 
+
+/**
+*  ,,
+*  |   |
+*  |___|
+*/
 void d(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 
 	if ((check_white(posX, posY, pow2(i - 1))) && (k == 0) && (kk == 0)){
@@ -409,17 +394,17 @@ void d(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 		if (l_bef == 0){
 			x = posX * 4 + 39 + u / 2;
 			y = posY * 4 + 39 + u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
 			x = posX * 4 + 39 + u / 2;;
 			y = posY * 4 + 39;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
 			x = posX * 4 + 39;
 			y = posY * 4 + 39 + u / 2;
-			LineTo(hdc, x, y);
+			LineToPoint(x, y);
 		}
 	}
 
@@ -465,19 +450,10 @@ void d(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 	}
 }
 
-void linetodxy(int dx, int dy)
-{
-	x += dx;
-	y += dy;
-	LineTo(hdc, x, y);
-}
-
 int pow2(int power){
 	int z = 1;
 	if (power == -1)
 		return 0;
-	if (power == 0)
-		return 1;
 	for (int i = 0; i < power; i++)
 		z *= 2;
 	return z;
@@ -487,7 +463,7 @@ bool check_black(int X, int Y, int i)
 {
 	for (int jj = X; jj < X + i; jj++)
 		for (int oo = Y; oo < Y + i; oo++)
-			if (!(arr[jj][oo] == 49))
+			if (!(arr[jj][oo] == 1))
 				return false;
 	return true;
 }
@@ -496,7 +472,27 @@ bool check_white(int X, int Y, int i)
 {
 	for (int jj = X; jj < X + i; jj++)
 		for (int oo = Y; oo < Y + i; oo++)
-			if ((arr[jj][oo] == 49))
+			if ((arr[jj][oo] == 1))
 				return false;
 	return true;
+}
+
+void linetodxy(int dx, int dy)
+{
+	x += dx;
+	y += dy;
+	if (num < 110000){
+		ptsX[num] = x;
+		ptsY[num] = y;
+		num++;
+	}
+}
+
+void LineToPoint(int dx, int dy)
+{
+	if (num < 110000){
+		ptsX[num] = dx;
+		ptsY[num] = dy;
+		num++;
+	}
 }
