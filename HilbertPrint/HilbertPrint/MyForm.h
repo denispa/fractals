@@ -1,15 +1,10 @@
+#pragma once
 #include <stdio.h>
 #include "CurveDraw.h"
-#pragma once
 
 namespace HilbertPrint {
 
-	using namespace System;
-	using namespace System::ComponentModel;
-	using namespace System::Collections;
-	using namespace System::Windows::Forms;
-	using namespace System::Data;
-	using namespace System::Drawing;
+
 	/// <summary>
 	/// Summary for MyForm
 	/// </summary>
@@ -56,6 +51,7 @@ namespace HilbertPrint {
 	private: System::Windows::Forms::ToolStripMenuItem^  aboutToolStripMenuItem;
 	private: System::Windows::Forms::ColorDialog^  colorDialog1;
 	private: System::Windows::Forms::CheckBox^  checkBox1;
+	private: System::Windows::Forms::ToolStripMenuItem^  exitToolStripMenuItem;
 
 	protected:
 
@@ -83,6 +79,7 @@ namespace HilbertPrint {
 			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->newToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->saveToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->exitToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->settingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->lineColorToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->fontColorToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -99,18 +96,18 @@ namespace HilbertPrint {
 			// 
 			// button1
 			// 
-			this->button1->Location = System::Drawing::Point(18, 21);
+			this->button1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button1.Image")));
+			this->button1->Location = System::Drawing::Point(29, 39);
 			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(142, 72);
+			this->button1->Size = System::Drawing::Size(64, 64);
 			this->button1->TabIndex = 0;
-			this->button1->Text = L"button1";
 			this->button1->UseVisualStyleBackColor = true;
 			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
 			// 
 			// pictureBox1
 			// 
 			this->pictureBox1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.Image")));
-			this->pictureBox1->Location = System::Drawing::Point(18, 135);
+			this->pictureBox1->Location = System::Drawing::Point(28, 146);
 			this->pictureBox1->Name = L"pictureBox1";
 			this->pictureBox1->Size = System::Drawing::Size(192, 192);
 			this->pictureBox1->TabIndex = 1;
@@ -130,7 +127,7 @@ namespace HilbertPrint {
 			this->button2->Font = (gcnew System::Drawing::Font(L"Britannic Bold", 26.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->button2->ForeColor = System::Drawing::SystemColors::ActiveCaptionText;
-			this->button2->Location = System::Drawing::Point(18, 353);
+			this->button2->Location = System::Drawing::Point(29, 437);
 			this->button2->Name = L"button2";
 			this->button2->Size = System::Drawing::Size(191, 88);
 			this->button2->TabIndex = 3;
@@ -141,7 +138,7 @@ namespace HilbertPrint {
 			// label1
 			// 
 			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(26, 106);
+			this->label1->Location = System::Drawing::Point(25, 119);
 			this->label1->Name = L"label1";
 			this->label1->Size = System::Drawing::Size(13, 13);
 			this->label1->TabIndex = 4;
@@ -161,9 +158,9 @@ namespace HilbertPrint {
 			// 
 			// fileToolStripMenuItem
 			// 
-			this->fileToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+			this->fileToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
 				this->openToolStripMenuItem,
-					this->newToolStripMenuItem, this->saveToolStripMenuItem
+					this->newToolStripMenuItem, this->saveToolStripMenuItem, this->exitToolStripMenuItem
 			});
 			this->fileToolStripMenuItem->Name = L"fileToolStripMenuItem";
 			this->fileToolStripMenuItem->Size = System::Drawing::Size(37, 20);
@@ -189,6 +186,13 @@ namespace HilbertPrint {
 			this->saveToolStripMenuItem->Size = System::Drawing::Size(103, 22);
 			this->saveToolStripMenuItem->Text = L"Save";
 			this->saveToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::saveToolStripMenuItem_Click);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this->exitToolStripMenuItem->Name = L"exitToolStripMenuItem";
+			this->exitToolStripMenuItem->Size = System::Drawing::Size(103, 22);
+			this->exitToolStripMenuItem->Text = L"Exit";
+			this->exitToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::exitToolStripMenuItem_Click);
 			// 
 			// settingsToolStripMenuItem
 			// 
@@ -249,7 +253,7 @@ namespace HilbertPrint {
 			this->checkBox1->AutoSize = true;
 			this->checkBox1->Font = (gcnew System::Drawing::Font(L"Arial Narrow", 15.75F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->checkBox1->Location = System::Drawing::Point(57, 468);
+			this->checkBox1->Location = System::Drawing::Point(74, 375);
 			this->checkBox1->Name = L"checkBox1";
 			this->checkBox1->Size = System::Drawing::Size(94, 29);
 			this->checkBox1->TabIndex = 6;
@@ -273,6 +277,7 @@ namespace HilbertPrint {
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MyForm";
 			this->Text = L"HilbertPrint";
+			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox2))->EndInit();
 			this->menuStrip1->ResumeLayout(false);
@@ -282,8 +287,8 @@ namespace HilbertPrint {
 
 		}
 #pragma endregion
-	private: Bitmap ^ bmp_for_draw;
-	private:String ^ full_name_of_image;
+	private:String ^ full_name_of_image = "font_big.bmp";
+	private: Bitmap ^ bmp_for_draw = gcnew Bitmap(full_name_of_image);
 	private:Color  Linecolor = Color::FromArgb(0xFF000000);
 	private:Color  Fontcolor = Color::FromArgb(0xFFFFFFFF);
 	private:Boolean  Inverse = false;
@@ -297,7 +302,7 @@ namespace HilbertPrint {
 		if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 		{
 			full_name_of_image = openFileDialog1->FileName;
-			bmp_for_draw = gcnew Bitmap(openFileDialog1->FileName);
+			bmp_for_draw = gcnew Bitmap(full_name_of_image);
 			this->pictureBox1->SizeMode = PictureBoxSizeMode::StretchImage;
 			pictureBox1->Image = bmp_for_draw;
 			pictureBox1->Invalidate();
@@ -368,10 +373,12 @@ namespace HilbertPrint {
 	}
 
 	private: System::Void trueToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		checkBox1->Checked = true;
 		Inverse = true;
 	}
 
 	private: System::Void falseToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		checkBox1->Checked = false;
 		Inverse = false;
 	}
 
@@ -385,5 +392,11 @@ namespace HilbertPrint {
 			Inverse = false;
 		}
 	}
-	};
+	private: System::Void exitToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+		Application::Exit();
+	}
+
+private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e) {
+}
+};
 }
