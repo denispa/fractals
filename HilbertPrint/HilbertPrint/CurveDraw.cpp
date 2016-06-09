@@ -6,6 +6,9 @@ Bitmap^ DrawCurve(System::Drawing::Graphics^ grr, Color  Linecolor, Color  Fontc
 	for (int i = 0; i < 512; i++){
 		arr[i] = (char*)malloc(512 * sizeof(char));
 	}
+	if (arr == NULL){
+		return gcnew Bitmap(513, 513);
+	}
 
 	if (inverse)
 		ReadBmp(0, 1, adress);
@@ -27,15 +30,15 @@ Bitmap^ DrawCurve(System::Drawing::Graphics^ grr, Color  Linecolor, Color  Fontc
 	//annimation
 	if (animate){
 		grr->Clear(Fontcolor);
-		grr->DrawLine(my_pen, 0, 0, ptsX[0] - 39, ptsY[0] - 39);
+		grr->DrawLine(my_pen, 0, 0, ptsX[0], ptsY[0]);
 		for (int i = 1; i < num; i++)
-			grr->DrawLine(my_pen, ptsX[i - 1] - 39, ptsY[i - 1] - 39, ptsX[i] - 39, ptsY[i] - 39);
+			grr->DrawLine(my_pen, ptsX[i - 1], ptsY[i - 1], ptsX[i], ptsY[i]);
 	}
 
 	//drawing to bitmap
-	g->DrawLine(my_pen, 0, 0, ptsX[0] - 39, ptsY[0] - 39);
+	g->DrawLine(my_pen, 0, 0, ptsX[0], ptsY[0]);
 	for (int i = 1; i < num; i++)
-		g->DrawLine(my_pen, ptsX[i - 1] - 39, ptsY[i - 1] - 39, ptsX[i] - 39, ptsY[i] - 39);
+		g->DrawLine(my_pen, ptsX[i - 1], ptsY[i - 1], ptsX[i], ptsY[i]);
 
 	for (int i = 0; i < 512; i++){
 		free(arr[i]);
@@ -70,7 +73,7 @@ void ReadBmp(int black, int white, String^ adress)
 				arr[i][o] = white;
 		}
 	}
-	//	delete(Bmp);
+	delete(Bmp);
 }
 
 /*
@@ -125,18 +128,18 @@ void a(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 	if ((kk == 1) || (k == 1))
 	{
 		if (l_bef == 0){
-			x = posX * 4 + 39 + u / 2;
-			y = posY * 4 + 39 + u / 2;
+			x = posX * 4 + u / 2;
+			y = posY * 4 + u / 2;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
-			x = posX * 4 + 39;
-			y = posY * 4 + 39 + u / 2;
+			x = posX * 4;
+			y = posY * 4 + u / 2;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
-			x = posX * 4 + 39 + u / 2;
-			y = posY * 4 + 39;
+			x = posX * 4 + u / 2;
+			y = posY * 4;
 			LineToPoint(x, y);
 		}
 	}
@@ -209,18 +212,18 @@ void b(int i, int  u, int l_bef, int l_aft, int posX, int posY, int step) {
 	if ((kk == 1) || (k == 1))
 	{
 		if (l_bef == 0){
-			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
-			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;
+			x = (posX + pow2(step - 1)) * 4 - u / 2;
+			y = (posY + pow2(step - 1)) * 4 - u / 2;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
-			x = (posX + pow2(step - 1)) * 4 + 39;
-			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;;
+			x = (posX + pow2(step - 1)) * 4;
+			y = (posY + pow2(step - 1)) * 4 - u / 2;;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
-			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
-			y = (posY + pow2(step - 1)) * 4 + 39;
+			x = (posX + pow2(step - 1)) * 4  - u / 2;
+			y = (posY + pow2(step - 1)) * 4;
 			LineToPoint(x, y);
 		}
 	}
@@ -294,18 +297,18 @@ void c(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 	if ((kk == 1) || (k == 1))
 	{
 		if (l_bef == 0){
-			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
-			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;
+			x = (posX + pow2(step - 1)) * 4 - u / 2;
+			y = (posY + pow2(step - 1)) * 4 - u / 2;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
-			x = (posX + pow2(step - 1)) * 4 + 39 - u / 2;
-			y = (posY + pow2(step - 1)) * 4 + 39;
+			x = (posX + pow2(step - 1)) * 4 - u / 2;
+			y = (posY + pow2(step - 1)) * 4;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
-			x = (posX + pow2(step - 1)) * 4 + 39;
-			y = (posY + pow2(step - 1)) * 4 + 39 - u / 2;
+			x = (posX + pow2(step - 1)) * 4;
+			y = (posY + pow2(step - 1)) * 4 - u / 2;
 			LineToPoint(x, y);
 		}
 	}
@@ -377,18 +380,18 @@ void d(int i, int u, int l_bef, int l_aft, int posX, int posY, int step) {
 	if ((kk == 1) || (k == 1))
 	{
 		if (l_bef == 0){
-			x = posX * 4 + 39 + u / 2;
-			y = posY * 4 + 39 + u / 2;
+			x = posX * 4+ u / 2;
+			y = posY * 4 + u / 2;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 1){
-			x = posX * 4 + 39 + u / 2;;
-			y = posY * 4 + 39;
+			x = posX * 4 + u / 2;;
+			y = posY * 4;
 			LineToPoint(x, y);
 		}
 		if (l_bef == 2){
-			x = posX * 4 + 39;
-			y = posY * 4 + 39 + u / 2;
+			x = posX * 4;
+			y = posY * 4 + u / 2;
 			LineToPoint(x, y);
 		}
 	}
