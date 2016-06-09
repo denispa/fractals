@@ -9,7 +9,7 @@ using namespace System::Windows::Forms;
 using namespace System::Data;
 using namespace System::Drawing;
 
-int DrawCurve(System::Drawing::Graphics^, System::Drawing::Pen^, System::String^ adress, bool inverse);
+Bitmap^ DrawCurve(System::Drawing::Graphics^, Color  Linecolor, Color  Fontcolor, System::String^ adress, bool inverse, bool animate);
 
 void linetodxy(int dx, int dy);
 void LineToPoint(int x, int y);

@@ -1,7 +1,6 @@
 #include "CurveDraw.h"
 
-
-int DrawCurve(System::Drawing::Graphics^ grr, System::Drawing::Pen^ my_pen, String^ adress, bool inverse){
+Bitmap^ DrawCurve(System::Drawing::Graphics^ grr, Color  Linecolor, Color  Fontcolor, String^ adress, bool inverse, bool animate){
 
 	arr = (char**)malloc(512 * sizeof(char*));
 	for (int i = 0; i < 512; i++){
@@ -13,14 +12,30 @@ int DrawCurve(System::Drawing::Graphics^ grr, System::Drawing::Pen^ my_pen, Stri
 	else
 		ReadBmp(1, 0, adress);
 	Makearray();
+
+
 	//line building
 	a(8, 4, 0, 0, 0, 0, 8);
 
-	//draw to picturebox
-	grr->DrawLine(my_pen, 0, 0, ptsX[0] - 39, ptsY[0] - 39);
 
+	//draw to picturebox
+	System::Drawing::Pen^ my_pen = gcnew System::Drawing::Pen(Linecolor, 1);
+	Bitmap^ bitmp = gcnew Bitmap(513, 513);
+	Graphics ^ g = Graphics::FromImage(bitmp);
+	g->Clear(Fontcolor);
+
+	//annimation
+	if (animate){
+		grr->Clear(Fontcolor);
+		grr->DrawLine(my_pen, 0, 0, ptsX[0] - 39, ptsY[0] - 39);
+		for (int i = 1; i < num; i++)
+			grr->DrawLine(my_pen, ptsX[i - 1] - 39, ptsY[i - 1] - 39, ptsX[i] - 39, ptsY[i] - 39);
+	}
+
+	//drawing to bitmap
+	g->DrawLine(my_pen, 0, 0, ptsX[0] - 39, ptsY[0] - 39);
 	for (int i = 1; i < num; i++)
-		grr->DrawLine(my_pen, ptsX[i - 1] - 39, ptsY[i - 1] - 39, ptsX[i] - 39, ptsY[i] - 39);
+		g->DrawLine(my_pen, ptsX[i - 1] - 39, ptsY[i - 1] - 39, ptsX[i] - 39, ptsY[i] - 39);
 
 	for (int i = 0; i < 512; i++){
 		free(arr[i]);
@@ -33,7 +48,7 @@ int DrawCurve(System::Drawing::Graphics^ grr, System::Drawing::Pen^ my_pen, Stri
 		ptsY[i] = 0;
 	}
 	num = 0;
-	return 0;
+	return bitmp;
 }
 
 
@@ -42,12 +57,12 @@ int DrawCurve(System::Drawing::Graphics^ grr, System::Drawing::Pen^ my_pen, Stri
 */
 void ReadBmp(int black, int white, String^ adress)
 {
+	Bitmap^ Bmp = gcnew Bitmap(Image::FromFile(adress), 512, 512);
+	Color c;
 	for (int i = 0; i < 512; i++)
 	{
-		Bitmap^ Bmp = gcnew Bitmap(adress);
 		for (int o = 0; o < 512; o++)
 		{
-			Color c;
 			c = Bmp->GetPixel(i, o);
 			if (c == Color::FromArgb(0xFF000000))
 				arr[i][o] = black;
@@ -55,6 +70,7 @@ void ReadBmp(int black, int white, String^ adress)
 				arr[i][o] = white;
 		}
 	}
+	//	delete(Bmp);
 }
 
 /*
@@ -455,6 +471,7 @@ void linetodxy(int dx, int dy)
 		ptsY[num] = y;
 		num++;
 	}
+
 }
 
 void LineToPoint(int dx, int dy)
